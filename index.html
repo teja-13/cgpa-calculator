@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CGPA Calculator</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    --primary:#8b5cf6;
+    --primary-dark:#7c3aed;
+    --primary-light:#c4b5fd;
+    --secondary:#a855f7;
+
+    --bg:#0b0718;
+    --surface:#16112b;
+    --surface-light:#21183f;
+
+    --text:#f8fafc;
+    --text-secondary:#cbd5e1;
+
+    --success:#10b981;
+    --danger:#ef4444;
+
+    --border:rgba(255,255,255,0.08);
+
+    --shadow:
+        0 10px 30px rgba(139,92,246,.20);
+
+    --glow:
+        0 0 20px rgba(139,92,246,.35);
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    min-height:100vh;
+    color:var(--text);
+    padding:25px;
+
+    background:
+    radial-gradient(circle at top left,
+        rgba(139,92,246,.25),
+        transparent 30%),
+
+    radial-gradient(circle at bottom right,
+        rgba(168,85,247,.2),
+        transparent 30%),
+
+    linear-gradient(
+        135deg,
+        #0b0718,
+        #120d24,
+        #1a1333
+    );
+}
+
+.container{
+    max-width:1100px;
+    margin:auto;
+}
+
+/* HEADER */
+
+.header{
+    text-align:center;
+    margin-bottom:35px;
+}
+
+.header h1{
+    font-size:3rem;
+    font-weight:700;
+
+    background:linear-gradient(
+        135deg,
+        #ffffff,
+        #c4b5fd,
+        #8b5cf6
+    );
+
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.header p{
+    margin-top:10px;
+    color:var(--text-secondary);
+}
+
+/* BUTTONS */
+
+.controls{
+    display:flex;
+    gap:12px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-bottom:20px;
+}
+
+button{
+    border:none;
+    cursor:pointer;
+    border-radius:12px;
+    padding:12px 18px;
+    font-size:.95rem;
+    transition:.3s ease;
+    font-weight:600;
+}
+
+.btn-primary{
+    color:white;
+    background:linear-gradient(
+        135deg,
+        var(--secondary),
+        var(--primary-dark)
+    );
+}
+
+.btn-primary:hover{
+    transform:translateY(-2px);
+    box-shadow:var(--glow);
+}
+
+.btn-success{
+    color:white;
+    background:linear-gradient(
+        135deg,
+        #10b981,
+        #059669
+    );
+}
+
+.btn-success:hover{
+    transform:translateY(-2px);
+}
+
+.btn-secondary{
+    color:white;
+    background:linear-gradient(
+        135deg,
+        #4c1d95,
+        #6d28d9
+    );
+}
+
+.btn-danger{
+    color:white;
+    background:linear-gradient(
+        135deg,
+        #ef4444,
+        #dc2626
+    );
+}
+
+button:disabled{
+    opacity:.5;
+    cursor:not-allowed;
+}
+
+/* COUNTER */
+
+.semester-counter{
+    text-align:center;
+    margin-bottom:25px;
+    color:var(--primary-light);
+    font-weight:600;
+}
+
+/* SEMESTERS */
+
+.semester-grid{
+    display:grid;
+    grid-template-columns:
+        repeat(auto-fit,minmax(300px,1fr));
+    gap:20px;
+}
+
+.semester-card{
+    background:rgba(22,17,43,.8);
+    backdrop-filter:blur(20px);
+
+    border:1px solid var(--border);
+    border-radius:20px;
+
+    padding:20px;
+
+    box-shadow:var(--shadow);
+
+    animation:fadeIn .35s ease;
+    transition:.3s ease;
+}
+
+.semester-card:hover{
+    transform:translateY(-5px);
+    box-shadow:
+        0 15px 40px rgba(139,92,246,.3);
+}
+
+.card-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+}
+
+.card-header h3{
+    color:var(--primary-light);
+}
+
+.remove-btn{
+    padding:6px 10px;
+    font-size:.8rem;
+}
+
+/* FORM */
+
+.form-group{
+    margin-bottom:16px;
+}
+
+label{
+    display:block;
+    margin-bottom:8px;
+    font-size:.9rem;
+    font-weight:500;
+}
+
+input{
+    width:100%;
+    padding:12px 14px;
+
+    border-radius:12px;
+
+    background:rgba(255,255,255,.04);
+    color:white;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    outline:none;
+    transition:.3s;
+}
+
+input::placeholder{
+    color:rgba(255,255,255,.4);
+}
+
+input:focus{
+    border-color:var(--primary);
+    box-shadow:
+        0 0 0 4px rgba(139,92,246,.15);
+}
+
+.error{
+    color:#f87171;
+    font-size:.8rem;
+    margin-top:6px;
+}
+
+/* RESULTS */
+
+.results{
+    margin-top:35px;
+
+    display:grid;
+    grid-template-columns:
+        repeat(auto-fit,minmax(250px,1fr));
+
+    gap:20px;
+}
+
+.result-card{
+    background:rgba(22,17,43,.85);
+    backdrop-filter:blur(20px);
+
+    border-radius:20px;
+    border:1px solid var(--border);
+
+    text-align:center;
+    padding:25px;
+
+    box-shadow:var(--shadow);
+}
+
+.result-card h4{
+    color:var(--text-secondary);
+    margin-bottom:10px;
+}
+
+.value{
+    font-size:2rem;
+    font-weight:700;
+    color:var(--primary-light);
+}
+
+.cgpa-card .value{
+    font-size:3rem;
+    color:white;
+    text-shadow:
+        0 0 25px rgba(139,92,246,.8);
+}
+
+/* FOOTER */
+
+footer{
+    margin-top:40px;
+    text-align:center;
+    color:var(--text-secondary);
+    font-size:.9rem;
+}
+
+/* ANIMATION */
+
+@keyframes fadeIn{
+    from{
+        opacity:0;
+        transform:translateY(15px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* MOBILE */
+
+@media(max-width:600px){
+
+    body{
+        padding:15px;
+    }
+
+    .header h1{
+        font-size:2.2rem;
+    }
+
+    .controls{
+        flex-direction:column;
+    }
+
+    .controls button{
+        width:100%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <h1>CGPA Calculator</h1>
+        <p>Calculate your CGPA using semester credits and SGPA</p>
+    </div>
+
+    <div class="controls">
+        <button id="addSemesterBtn" class="btn-primary">
+            ➕ Add Semester
+        </button>
+
+        <button id="calculateBtn" class="btn-success">
+            📊 Calculate CGPA
+        </button>
+
+        <button id="resetBtn" class="btn-secondary">
+            🔄 Reset
+        </button>
+    </div>
+
+    <div id="semesterCounter" class="semester-counter">
+        1 of 8 semesters added
+    </div>
+
+    <div id="semesterContainer" class="semester-grid"></div>
+
+    <div class="results">
+
+        <div class="result-card">
+            <h4>Total Credits</h4>
+            <div id="totalCredits" class="value">0</div>
+        </div>
+
+        <div class="result-card">
+            <h4>Weighted Points</h4>
+            <div id="weightedPoints" class="value">0</div>
+        </div>
+
+        <div class="result-card cgpa-card">
+            <h4>CGPA</h4>
+            <div id="cgpa" class="value">0.00</div>
+        </div>
+
+    </div>
+
+    <footer>
+        CGPA = Σ(Credits × SGPA) / Σ(Credits)
+    </footer>
+
+</div>
+
+<script>
+const MAX_SEMESTERS = 8;
+
+const semesterContainer =
+document.getElementById("semesterContainer");
+
+const addSemesterBtn =
+document.getElementById("addSemesterBtn");
+
+const calculateBtn =
+document.getElementById("calculateBtn");
+
+const resetBtn =
+document.getElementById("resetBtn");
+
+const semesterCounter =
+document.getElementById("semesterCounter");
+
+let semesterCount = 0;
+
+/* ---------- UPDATE COUNTER ---------- */
+
+function updateCounter(){
+
+    semesterCounter.textContent =
+    `${semesterCount} of ${MAX_SEMESTERS} semesters added`;
+
+    addSemesterBtn.disabled =
+    semesterCount >= MAX_SEMESTERS;
+}
+
+/* ---------- CREATE SEMESTER ---------- */
+
+function createSemester(){
+
+    if(semesterCount >= MAX_SEMESTERS)
+        return;
+
+    semesterCount++;
+
+    const card =
+    document.createElement("div");
+
+    card.className =
+    "semester-card";
+
+    card.innerHTML = `
+        <div class="card-header">
+            <h3>Semester ${semesterCount}</h3>
+
+            ${
+                semesterCount > 1
+                ? `<button class="btn-danger remove-btn">
+                    Remove
+                   </button>`
+                : ``
+            }
+        </div>
+
+        <div class="form-group">
+            <label>Credits</label>
+            <input
+                type="number"
+                class="credits"
+                min="1"
+                step="1"
+                placeholder="Enter credits">
+            <div class="error"></div>
+        </div>
+
+        <div class="form-group">
+            <label>SGPA</label>
+            <input
+                type="number"
+                class="sgpa"
+                min="0"
+                max="10"
+                step="0.01"
+                placeholder="Enter SGPA">
+            <div class="error"></div>
+        </div>
+    `;
+
+    const removeBtn =
+    card.querySelector(".remove-btn");
+
+    if(removeBtn){
+
+        removeBtn.addEventListener(
+            "click",
+            () => {
+
+                card.remove();
+
+                semesterCount--;
+
+                renumberSemesters();
+
+                updateCounter();
+
+                calculateCGPA();
+            }
+        );
+    }
+
+    card.querySelectorAll("input")
+    .forEach(input => {
+
+        input.addEventListener(
+            "input",
+            () => {
+                validate(input);
+                calculateCGPA();
+            }
+        );
+    });
+
+    semesterContainer.appendChild(card);
+
+    updateCounter();
+}
+
+/* ---------- RENUMBER ---------- */
+
+function renumberSemesters(){
+
+    const cards =
+    document.querySelectorAll(".semester-card");
+
+    cards.forEach((card,index)=>{
+
+        card.querySelector("h3").textContent =
+        `Semester ${index+1}`;
+    });
+}
+
+/* ---------- VALIDATE ---------- */
+
+function validate(input){
+
+    const error =
+    input.parentElement.querySelector(".error");
+
+    error.textContent = "";
+
+    const value =
+    parseFloat(input.value);
+
+    if(input.classList.contains("credits")){
+
+        if(
+            input.value &&
+            (isNaN(value) || value <= 0)
+        ){
+            error.textContent =
+            "Credits must be greater than 0";
+        }
+    }
+
+    if(input.classList.contains("sgpa")){
+
+        if(
+            input.value &&
+            (isNaN(value) ||
+             value < 0 ||
+             value > 10)
+        ){
+            error.textContent =
+            "SGPA must be between 0 and 10";
+        }
+    }
+}
+
+/* ---------- CALCULATE ---------- */
+
+function calculateCGPA(){
+
+    let totalCredits = 0;
+    let weightedPoints = 0;
+
+    document
+    .querySelectorAll(".semester-card")
+    .forEach(card => {
+
+        const credits =
+        parseFloat(
+            card.querySelector(".credits").value
+        ) || 0;
+
+        const sgpa =
+        parseFloat(
+            card.querySelector(".sgpa").value
+        ) || 0;
+
+        if(
+            credits > 0 &&
+            sgpa >= 0 &&
+            sgpa <= 10
+        ){
+            totalCredits += credits;
+            weightedPoints += credits * sgpa;
+        }
+    });
+
+    const cgpa =
+    totalCredits
+    ? weightedPoints / totalCredits
+    : 0;
+
+    document.getElementById(
+        "totalCredits"
+    ).textContent =
+    totalCredits.toFixed(0);
+
+    document.getElementById(
+        "weightedPoints"
+    ).textContent =
+    weightedPoints.toFixed(2);
+
+    document.getElementById(
+        "cgpa"
+    ).textContent =
+    cgpa.toFixed(2);
+}
+
+/* ---------- RESET ---------- */
+
+function resetAll(){
+
+    semesterContainer.innerHTML = "";
+
+    semesterCount = 0;
+
+    document.getElementById(
+        "totalCredits"
+    ).textContent = "0";
+
+    document.getElementById(
+        "weightedPoints"
+    ).textContent = "0";
+
+    document.getElementById(
+        "cgpa"
+    ).textContent = "0.00";
+
+    createSemester();
+}
+
+/* ---------- EVENTS ---------- */
+
+addSemesterBtn.addEventListener(
+    "click",
+    createSemester
+);
+
+calculateBtn.addEventListener(
+    "click",
+    calculateCGPA
+);
+
+resetBtn.addEventListener(
+    "click",
+    resetAll
+);
+
+/* ---------- INIT ---------- */
+
+createSemester();
+</script>
+
+</body>
+</html>
